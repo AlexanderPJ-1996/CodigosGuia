@@ -1,0 +1,34 @@
+<!-- Etiquetas XML para proyectos C#, (.csproj) -->
+
+<Project Sdk="Microsoft.NET.Sdk"> <!-- Es la etiqueta raíz que define el proyecto -->
+
+  <PropertyGroup> <!-- Definir propiedades de configuración como la versión del framework, el nombre del ensamblado, etc... -->
+    <AssemblyName></AssemblyName> <!-- Ensamblado: Nombre -->
+	<AssemblyTitle></AssemblyTitle> <!-- Ensamblado: Título -->
+	<AssemblyProduct></AssemblyProduct> <!-- Ensamblado: Producto -->
+	<PackageId></PackageId> <!-- Nombre o ID de paquete/proyecto -->
+    <Product></Product> <!-- Nombre de paquete/proyecto -->
+	<Version>0.0.0.0</Version> <!-- Versión -->
+    <Authors></Authors> <!-- Desarrollador del proyecto -->
+    <Description></Description> <!-- Descripción del proyecto -->
+    <Copyright></Copyright> <!-- Licencia/copyright del proyecto -->
+    <ApplicationIcon></ApplicationIcon> <!-- [WinForm/Consola] Icono del proyecto -->
+  </PropertyGroup>
+  
+  <ItemGroup> <!-- Agrupa elementos como referencias a otros ensamblados, archivos de código, recursos, etc... -->
+    <Content Include="[Archivo]"> <!-- Define archivos que deben ser incluidos como contenido en la salida -->
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory> <!-- Copiar versión más reciente -->
+	  <CopyToOutputDirectory>Always</CopyToOutputDirectory> <!-- Copiar siempre -->
+    </Content>
+	
+	<Folder Include="[Carpeta]\" /> <!-- Incluir carpeta dentro del proyecto -->
+	<Compile Include="Program.cs" /> <!-- Especifica los archivos de código que se deben compilar -->
+	<None Include="README.md" /> <!-- Define archivos que no se deben compilar, pero que deben estar incluidos en el proyecto -->
+	<PackageReference Include="Newtonsoft.Json" Version="12.0.3" /> <!-- Referenciar paquetes NuGet -->
+	<Reference Include="System.Xml" /> <!-- Referencia a ensamblados que no son parte de NuGet -->
+	<ProjectReference Include="..\Project\Project.csproj" /> <!-- Referencia a otros proyectos dentro de la misma solución -->
+  </ItemGroup>
+
+	<Import Project="common.props" /> <!-- Importa un archivo de proyecto MSBuild -->
+
+</Project>
