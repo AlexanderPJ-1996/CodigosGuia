@@ -212,8 +212,31 @@ namespace ArchviosYCarpetas
             {
                 try
                 {
-                    Image Img = PBx.Image;
-                    Img.Save(SaveDialog.FileName);
+                    // Importar using System.Drawing.Imaging;
+					ImageFormat Formato = ImageFormat.Png;
+					// Captar extensión y formato de la imagen
+					String Ext = Path.GetExtension(SaveDialog.FileName).ToLower();
+					switch (Ext)
+					{
+						case ".jpg":
+						case ".jpeg":
+							Formato = ImageFormat.Jpeg;
+							break;
+						case ".bmp":
+							Formato = ImageFormat.Bmp;
+							break;
+						case ".gif":
+							Formato = ImageFormat.Gif;
+							break;
+						case ".png":
+							Formato = ImageFormat.Png;
+							break;
+						default:
+							MessageBox.Show("Formato no soportado");
+							return;
+					}
+					Image Img = PBx.Image;
+                    Img.Save(SaveDialog.FileName, Formato);
                 }
                 catch (Exception ex)
                 {
@@ -466,6 +489,7 @@ namespace CadenasString
         public static String SinEspacios(String Input)
         {
             String Output = Regex.Replace(Input, @"\s", String.Empty);
+			String Output = Input.Replace(" ", String.Empty); // Sin librerías
             return Output;
         }
 
@@ -551,7 +575,7 @@ namespace CtrlWinForms
             {
                 Pnl.Controls.RemoveAt(0);
             }
-            Form Frm = Modulo as Form;
+            Form Frm = Mod as Form;
             Frm.TopLevel = false;
             Frm.FormBorderStyle = FormBorderStyle.None;
             Frm.Dock = DockStyle.Fill;
@@ -603,6 +627,77 @@ namespace CtrlWinForms
             }
             Frm.Show();
             Frm.BringToFront();
+        }
+		
+		#region Configurar eventos para selecionar items dentro de un DataGridView
+		// Configurar control: DataGridView para seleccionar celdas de forma continua
+		void SeleCell(Int32 RowIndex, Label Lab, DataGridView DGV)
+		{
+			if (RowIndex < 0 || RowIndex >= DGV.RowCount) return;
+			
+			var Cell = DGV.Rows[RowIndex].Cells.Cast<DataGridViewCell>().FirstOrDefault(c => c.Visible);
+			
+			if (Cell != null)
+			{
+				DGV.CurrentCell = Cell;
+				DGV.ClearSelection();
+				Cell.Selected = true;
+				LoadLabel(Lab, DGV);
+			}
+		}
+		// Editar texto de control: Label para mostrar número de registros
+		void LoadLabel(Label Lab, DataGridView DGV)
+		{
+			Int32 TotalFilas = DGV.RowCount;
+			Int32 FilaActual = DGV.CurrentCell?.RowIndex ?? -1;
+			
+			if (FilaActual >= 0 && FilaActual < TotalFilas)
+			{
+				Lab.Text = $"{FilaActual + 1}/{TotalFilas}";
+			}
+			else
+			{
+				Lab.Text = $"{TotalFilas}";
+			}
+		}
+		// 
+		private void DGVPrev(object sender, EventArgs e, DataGridView DGV, Label Lab)
+		{
+			if (DGV.RowCount == 0) return;
+			
+			Int32 CurrentRow = DGV.CurrentCell?.RowIndex ?? 0;
+			
+			Int32 NewRow = CurrentRow - 1;
+			
+			if (NewRow < 0)
+			{
+				NewRow = DGV.RowCount - 1;
+			}
+			
+			SeleCell(NewRow, Lab, DGV);
+		}
+        // 
+        private void DGVNext(object sender, EventArgs e, DataGridView DGV, Label Lab)
+        {
+            if (DGV.Rows.Count == 0) return;
+
+            Int32 CurrentRow = DGV.CurrentCell?.RowIndex ?? -1;
+
+            Int32 NewRow = CurrentRow + 1;
+
+            if (NewRow >= DGV.Rows.Count) NewRow = 0;
+
+            SeleCell(NewRow, Lab, DGV);
+        }
+		#endregion
+        // Captar datos de un DataGridView
+        void CellE(DataGridView DGV)
+        {
+            Int64 Columna0 = Convert.ToInt64(DGV.CurrentRow.Cells[0].Value);
+            String Columna1 = DGV.CurrentRow.Cells[1].Value.ToString();
+            Boolean Columna2 = Convert.ToBoolean(DGV.CurrentRow.Cells[2].Value);
+            DateTime Columna3 = Convert.ToDateTime(DGV.CurrentRow.Cells[3].Value);
+            Decimal Columna4 = Convert.ToDecimal(DGV.CurrentRow.Cells[4].Value);
         }
     }
 

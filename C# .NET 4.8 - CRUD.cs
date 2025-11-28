@@ -1,4 +1,6 @@
 #region Librerías
+using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using System.IO;
 using System.Data;
@@ -45,6 +47,8 @@ namespace CodigosGuia
 
         // Variable para almacenar si los procedimientos: UPDATE y DELETE, se realizaron con exito o no.
         public static Boolean Done;
+        // Variables para almacenar Exception: ex.Message 
+        public static String ExMess, XTitle;
         #endregion
 
         #region Conectar con base de datos
@@ -86,10 +90,10 @@ namespace CodigosGuia
                 Conexion.Open();
                 try
                 {
-                    String SQL = "SELECT * FROM " + Tabla + " WHERE (" + Columna + " = @Columna)";
+                    String SQL = "SELECT * FROM " + Tabla + " WHERE (" + Columna + " = @Verificar)";
                     using (SqlCommand CMD = new SqlCommand(SQL, Conexion))
                     {
-                        CMD.Parameters.AddWithValue("@Columna", Verificar);
+                        CMD.Parameters.AddWithValue("@Verificar", Verificar);
                         using (SqlDataReader DR = CMD.ExecuteReader())
                         {
                             if (DR.HasRows)
@@ -160,7 +164,7 @@ namespace CodigosGuia
                         {
                             while (DR.Read())
                             {
-                                Lista.Add(new ClaseTabla()
+                                Output.Add(new ClaseTabla()
                                 {
                                     // Acá el nombre de la columna dentro de DR[""] y la variable deberá ser exactamente iguales.
                                     Columna1 = Convert.ToInt64(DR["Columna1"]),
@@ -185,9 +189,9 @@ namespace CodigosGuia
 
         /*
             Procedimiento para retornar un List>String> con de datos de una columna en base a condicionales WHERE
-            La variable: String SQL deberá ser del estilo: SELECT [Columna] FROM [Tabla] ORDER BY [Columna] ASC/DESC.
+            La variable: String SQL deberá ser del estilo: SELECT [Columna] FROM [Tabla] WHERE ([Columna]=@Columna) ORDER BY [Columna] ASC/DESC.
         */
-        public static List<String> CargarLista(String Tabla, String Columna, Boolean Order)
+        public static List<String> CargarLista(String SQL, String Columna)
         {
             List<String> Output = new List<String>();
             using (var Conexion = new SqlConnection(CoString))
@@ -195,9 +199,6 @@ namespace CodigosGuia
                 Conexion.Open();
                 try
                 {
-                    String Ord = String.Empty;
-                    if (Order == true) { Ord = " ASC"; } else { Ord = " DESC"; }
-                    String SQL = "SELECT " + Columna + " FROM " + Tabla + " ORDER BY " + Columna + Ord;
                     using (SqlCommand CMD = new SqlCommand(SQL, Conexion))
                     {
                         CMD.CommandType = CommandType.Text;
@@ -362,7 +363,7 @@ namespace CodigosGuia
                         CMD.ExecuteNonQuery();
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
                 }
@@ -372,6 +373,7 @@ namespace CodigosGuia
         #endregion
     }
 
+    #region Clases y funciones complementarias
     // Estructura base para las "ClaseTabla" para los procedimientos: CargarDatos.
     public class ClaseTabla
     {
@@ -381,4 +383,5 @@ namespace CodigosGuia
         public Boolean Columna4 { get; set; }
         public Decimal Columna5 { get; set; }
     }
+    #endregion
 }
