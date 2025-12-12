@@ -47,9 +47,9 @@ CREATE VIEW IF NOT EXISTS 'Vista' -- MySQL/MariaDB | SQLite
 -- 
 
 -- Solo permitir valores específicos en una columna
-'Columna' INTEGER NOT NULL, CHECK ('Columna' IN ('Valor1', 'Valor2')) -- MySQL/MariaDB
+'Columna' INTEGER NOT NULL, CHECK ([Columna] IN ('Valor1', 'Valor2')) -- MySQL/MariaDB
 -- 
-'Columna' INTEGER CHECK('Columna' IN ('Valor1', 'Valor2')) NOT NULL -- SQLite
+'Columna' INTEGER CHECK([Columna] IN ('Valor1', 'Valor2')) NOT NULL -- SQLite
 -- 
 
 -- Crear FOREIGN KEY:

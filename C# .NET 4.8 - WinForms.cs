@@ -155,10 +155,10 @@ namespace ArchviosYCarpetas
     public static class OpenSaveFile
     {
         // OpenFileDialog para cargar una imagen en un PictureBox
-        public static void OpenFile(PictureBox PBx)
+        public static void OpenImgs(PictureBox PBx)
         {
             // Configurar OpenFileDialog
-            OpenFileDialog OFile = new OpenFileDialog
+            OpenFileDialog OFile = new OpenFileDialog() 
             {
                 Filter = "Imagenes PNG|*.png|" +
                 "Imagenes JPG/JPEG|*.jpg;*.jpeg|" +
@@ -180,7 +180,7 @@ namespace ArchviosYCarpetas
                         {
                             FS.CopyTo(MS);
                             MS.Seek(0, SeekOrigin.Begin);
-                            PBxFoto.Image = Image.FromStream(MS);
+                            PBx.Image = Image.FromStream(MS);
                         }
                     }
                 }
@@ -193,7 +193,7 @@ namespace ArchviosYCarpetas
         }
 
         // SaveFileDialog para guardar imagen desde un PictureBox
-        public static void SaveFile(PictureBox PBx)
+        public static void SaveImgs(PictureBox PBx)
         {
             // Configurar SaveFileDialog
             SaveFileDialog SaveDialog = new SaveFileDialog
@@ -492,6 +492,20 @@ namespace CadenasString
 			String Output = Input.Replace(" ", String.Empty); // Sin librerías
             return Output;
         }
+		// Validar si un String está vacio o es null
+		public static Boolean TextEmpty(String Texto)
+		{
+			Boolean Output = new Boolean();
+			if (String.IsNullOrWhiteSpace(Texto))
+			{
+				Output = false;
+			}
+			else
+			{
+				Output = true;
+			}
+			return Output;
+		}
 
         // Captar un número y mostrar con formato moneda en un Label/TextBox
         public static void Formatear(String Input, Label Lab)
@@ -548,10 +562,17 @@ namespace CtrlWinForms
         [STAThread]
         static void Main()
         {
-            var ProjInfo = typeof(Program).Assembly;
-            var Atributos = (GuidAttribute)ProjInfo.GetCustomAttributes(typeof(GuidAttribute), true)[0];
-            string MyGUID = Atributos.Value.ToString();
-            Mutex Mtx = new Mutex(true, "{" + MyGUID +"}");
+            var ProjInfo = 
+				typeof(Program).Assembly;
+			
+            var Atributos = 
+				(GuidAttribute)ProjInfo.GetCustomAttributes(typeof(GuidAttribute), true)[0];
+			
+            String MyGUID = 
+				Atributos.Value.ToString();
+			
+            Mutex Mtx = 
+				new Mutex(true, "{" + MyGUID +"}");
 			
 			if(Mtx.WaitOne(TimeSpan.Zero, true))
             {
@@ -561,21 +582,33 @@ namespace CtrlWinForms
             }
             else
             {
-                MessageBox.Show("Instancia abierta", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Instancia abierta", Application.ProductName);
             }
         }
     }
     
     public partial class AbrirForms : Form
     {
-        // Procedimiento para abrir un Form como elemento dentro de un Panel
-        void OpenForm(Panel Pnl, Object Mod)
+        // Procedimiento para usar eventos en un UserControl dese un Form Padre
+		void EventoUserControl(object sender, EventArgs e)
+		{
+			// Método 1
+			Form Frm = ParentForm as Form;
+			if (Frm != null)
+			{
+				// Acciones a ejecutar en el Form como control directo en el mismo
+			}
+			// Método 2: simplificación del método 1
+			if (ParentForm is Form Frm)
+			{
+				// Acciones a ejecutar en el Form como control directo en el mismo
+			}
+		}
+		// Procedimiento para abrir un Form como elemento dentro de un Panel
+        void OpenForm(Panel Pnl, Form Frm)
         {
-            if (Pnl.Controls.Count > 0)
-            {
-                Pnl.Controls.RemoveAt(0);
-            }
-            Form Frm = Mod as Form;
+            if (Pnl.Controls.Count > 0) { Pnl.Controls.RemoveAt(0); }
+            //Form Frm = Mod as Form;
             Frm.TopLevel = false;
             Frm.FormBorderStyle = FormBorderStyle.None;
             Frm.Dock = DockStyle.Fill;
@@ -691,7 +724,7 @@ namespace CtrlWinForms
         }
 		#endregion
         // Captar datos de un DataGridView
-        void CellE(DataGridView DGV)
+        void CellSele(DataGridView DGV)
         {
             Int64 Columna0 = Convert.ToInt64(DGV.CurrentRow.Cells[0].Value);
             String Columna1 = DGV.CurrentRow.Cells[1].Value.ToString();
@@ -699,6 +732,26 @@ namespace CtrlWinForms
             DateTime Columna3 = Convert.ToDateTime(DGV.CurrentRow.Cells[3].Value);
             Decimal Columna4 = Convert.ToDecimal(DGV.CurrentRow.Cells[4].Value);
         }
+		// 
+		void CellSize(DataGridView DGV)
+		{
+			// Visibilidad de columna
+			DGV.Columns[0].Visible = true/false;
+			// Texto en cabecera de columna
+			DGV.Columns[0].HeaderText = "";
+			// Establecer ancho de columna
+			DGV.Columns[0].Width = 0;
+		}
+		// 
+		void CellColor(DataGridView DGV)
+		{
+			// Color de fila primario: LightSeaGreen
+			DGV.RowsDefaultCellStyle.BackColor = Color.LightSeaGreen;
+			// Color de fila secundario: LightBlue
+			DGV.AlternatingRowsDefaultCellStyle.BackColor = Color.LightBlue;
+			// Alto de fila: 30
+            DGV.RowTemplate.Height = 30;
+		}
     }
 
     public static class PropControls

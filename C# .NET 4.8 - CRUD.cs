@@ -58,7 +58,7 @@ namespace CodigosGuia
             Boolean Output = new Boolean();
             while (Output == false)
             {
-                using (var Conexion = new SqlConnection(CoString))
+                using (SqlConnection Conexion = new SqlConnection(CoString))
                 {
                     try
                     {
@@ -82,15 +82,17 @@ namespace CodigosGuia
 
         #region Procedimientos SELECT
         // Metodo que retorna una variable boolean para verificar la existencia de un archivo en base a condicionales WHERE.
-        public static Boolean DataEx(String Tabla, String Columna, String Verificar)
+        public static Boolean DataEx(String Tabla, String Columna, Object Verificar)
         {
             Boolean Output = new Boolean();
-            using (var Conexion = new SqlConnection(CoString))
+            using (SqlConnection Conexion = new SqlConnection(CoString))
             {
                 Conexion.Open();
                 try
                 {
-                    String SQL = "SELECT * FROM " + Tabla + " WHERE (" + Columna + " = @Verificar)";
+                    String SQL = 
+                        "SELECT * FROM " + Tabla + " WHERE (" + Columna + " = @Verificar)";
+                    
                     using (SqlCommand CMD = new SqlCommand(SQL, Conexion))
                     {
                         CMD.Parameters.AddWithValue("@Verificar", Verificar);
@@ -121,7 +123,7 @@ namespace CodigosGuia
         public static String Texto(String SQL)
         {
             String Output = String.Empty;
-            using (var Conexion = new SqlConnection(CoString))
+            using (SqlConnection Conexion = new SqlConnection(CoString))
             {
                 Conexion.Open();
                 try
@@ -151,12 +153,14 @@ namespace CodigosGuia
         public static List<ClaseTabla> CargarDatos()
         {
             List<ClaseTabla> Output = new List<ClaseTabla>();
-            using (var Conexion = new SqlConnection(CoString))
+            using (SqlConnection Conexion = new SqlConnection(CoString))
             {
                 Conexion.Open();
                 try
                 {
-                    String SQL = "SELECT * FROM [Tabla]";
+                    String SQL = 
+                        "SELECT * FROM [Tabla]";
+                    
                     using (SqlCommand CMD = new SqlCommand(SQL, Conexion))
                     {
                         CMD.CommandType = CommandType.Text;
@@ -194,7 +198,7 @@ namespace CodigosGuia
         public static List<String> CargarLista(String SQL, String Columna)
         {
             List<String> Output = new List<String>();
-            using (var Conexion = new SqlConnection(CoString))
+            using (SqlConnection Conexion = new SqlConnection(CoString))
             {
                 Conexion.Open();
                 try
@@ -225,12 +229,14 @@ namespace CodigosGuia
         // Procedimiento para registrar datos en una tabla.
         public static void InseRegs(Int64 Columna1, String Columna2, String Columna3, String Columna4, String Columna5)
         {
-            using (var Conexion = new SqlConnection(CoString))
+            using (SqlConnection Conexion = new SqlConnection(CoString))
             {
                 Conexion.Open();
                 try
                 {
-                    String SQL = "INSERT INTO [Tabla] (Columna1, Columna2, Columna3, Columna4, Columna5) VALUES (@Columna1, @Columna2, @Columna3, @Columna4, @Columna5)";
+                    String SQL = 
+                        "INSERT INTO [Tabla] (Columna1, Columna2, Columna3, Columna4, Columna5) VALUES (@Columna1, @Columna2, @Columna3, @Columna4, @Columna5)";
+                    
                     using (SqlCommand CMD = new SqlCommand(SQL, Conexion))
                     {
                         CMD.Parameters.AddWithValue("@Columna1", Columna1);
@@ -254,18 +260,20 @@ namespace CodigosGuia
         // Procedimiento para editar datos existentes de una tabla en base a condicionales WHERE.
         public static void UpdaRegs(Int64 Columna1, String Columna2, String Columna3, String Columna4, String Columna5, Objetc ColumnaX)
         {
-            using (var Conexion = new SqlConnection(CoString))
+            using (SqlConnection Conexion = new SqlConnection(CoString))
             {
                 Conexion.Open();
                 try
                 {
-                    String SQL = "UPDATE [Tabla] SET " +
-                    "Columna1 = @Columna1, " +
-                    "Columna2 = @Columna2, " +
-                    "Columna3 = @Columna3, " +
-                    "Columna4 = @Columna4, " +
-                    "Columna5 = @Columna5 " +
-                    "WHERE (ColumnaX = @ColumnaX)";
+                    String SQL = 
+                        "UPDATE [Tabla] SET " + 
+                        "Columna1 = @Columna1, " + 
+                        "Columna2 = @Columna2, " + 
+                        "Columna3 = @Columna3, " + 
+                        "Columna4 = @Columna4, " + 
+                        "Columna5 = @Columna5 " + 
+                        "WHERE (ColumnaX = @ColumnaX)";
+                    
                     using (SqlCommand CMD = new SqlCommand(SQL, Conexion))
                     {
                         CMD.Parameters.AddWithValue("@Columna1", Columna1);
@@ -288,17 +296,19 @@ namespace CodigosGuia
         }
 
         // Procedimiento para eliminar datos existentes de una tabla en base a condicionales WHERE.
-        public static void DeleRegs(String Tabla, Objetc ColumnaX)
+        public static void DeleRegs(String Tabla, Int64 ID)
         {
-            using (var Conexion = new SqlConnection(CoString))
+            using (SqlConnection Conexion = new SqlConnection(CoString))
             {
                 Conexion.Open();
                 try
                 {
-                    String SQL = "DELETE FROM " + Tabla + " WHERE (ColumnaX = @ColumnaX)";
+                    String SQL = 
+                        "DELETE FROM " + Tabla + " WHERE (ID = @ID)";
+                    
                     using (SqlCommand CMD = new SqlCommand(SQL, Conexion))
                     {
-                        CMD.Parameters.AddWithValue("@ColumnaX", ColumnaX);
+                        CMD.Parameters.AddWithValue("@ID", ID);
                         CMD.ExecuteNonQuery();
                         Done = true;
                     }
@@ -315,7 +325,9 @@ namespace CodigosGuia
         // Procedimiento para registrar datos en una tablas desde un archivo .csv UTF-8 Uniconde (separado por comas).
         public static void Importar()
         {
-            String Ruta = @"[Ruta de archivo].csv";
+            String Ruta = 
+                @"[Ruta de archivo].csv";
+            
             if (File.Exists(Ruta))
             {
                 try
@@ -323,7 +335,7 @@ namespace CodigosGuia
                     using (var Read = new StreamReader(Ruta))
                     {
                         String Head = Read.ReadLine();
-                        using (var Conexion = new MySqlConnection(CoString))
+                        using (SqlConnection Conexion = new MySqlConnection(CoString))
                         {
                             Conexion.Open();
                             while (!Read.EndOfStream)
@@ -351,13 +363,17 @@ namespace CodigosGuia
         // Recuperar texto de los archivos .sql y ejecutar consultas sql desde archivos
         public static void ExecProc()
         {
-            using (var Conexion = new MySqlConnection(CoString))
+            using (SqlConnection Conexion = new MySqlConnection(CoString))
             {
                 Conexion.Open();
                 try
                 {
-                    String Ruta = @"[Ruta de archivo].sql";
-                    String SQL = File.ReadAllText(Ruta);
+                    String Ruta = 
+                        @"[Ruta de archivo].sql";
+                    
+                    String SQL = 
+                        File.ReadAllText(Ruta);
+                    
                     using (MySqlCommand CMD = new MySqlCommand(SQL, Conexion))
                     {
                         CMD.ExecuteNonQuery();
