@@ -4,11 +4,11 @@
 
   <PropertyGroup> <!-- Definir propiedades de configuración como la versión del framework, el nombre del ensamblado, etc... -->
     <AssemblyName></AssemblyName> <!-- Ensamblado: Nombre -->
-	<AssemblyTitle></AssemblyTitle> <!-- Ensamblado: Título -->
-	<AssemblyProduct></AssemblyProduct> <!-- Ensamblado: Producto -->
-	<PackageId></PackageId> <!-- Nombre o ID de paquete/proyecto -->
+	  <AssemblyTitle></AssemblyTitle> <!-- Ensamblado: Título -->
+	  <AssemblyProduct></AssemblyProduct> <!-- Ensamblado: Producto -->
+	  <PackageId></PackageId> <!-- Nombre o ID de paquete/proyecto -->
     <Product></Product> <!-- Nombre de paquete/proyecto -->
-	<Version>0.0.0.0</Version> <!-- Versión -->
+	  <Version>0.0.0.0</Version> <!-- Versión -->
     <Authors></Authors> <!-- Desarrollador del proyecto -->
     <Description></Description> <!-- Descripción del proyecto -->
     <Copyright></Copyright> <!-- Licencia/copyright del proyecto -->

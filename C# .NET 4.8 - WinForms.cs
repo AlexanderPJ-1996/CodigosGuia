@@ -45,10 +45,11 @@ using System;
 using System.Windows.Forms;
 using System.Threading;
 using System.Runtime.InteropServices;
+using System.Data.Common;
 #endregion
 
 #region Manejo de archivos y carpetas/directorios
-namespace ArchviosYCarpetas
+namespace CodigosGuia
 {
     public static class Carpetas
     {
@@ -373,13 +374,14 @@ namespace EncriptarTexto
     public static class AES
     {
         // Encryption Key (clave de cifrado)
-        private static readonly string key = "0123456789012345"; // Debe ser de 16, 24 o 32 caracteres
+        private static readonly String key = "0123456789012345"; // Debe ser de 16, 24 o 32 caracteres
         // Initialization Vector (vector de inicialización)
-        private static readonly string iv = "5432109876543210";  // Debe ser de 16 caracteres
+        private static readonly String iv = "5432109876543210";  // Debe ser de 16 caracteres
 
         // Encriptar texto con AES
         public static String AESEncrypt(String Input)
         {
+            String Output = String.Empty;
             using (Aes AESAlg = Aes.Create())
             {
                 AESAlg.Key = Encoding.UTF8.GetBytes(key);
@@ -393,15 +395,17 @@ namespace EncriptarTexto
                         {
                             SWe.Write(Input);
                         }
-                        return Convert.ToBase64String(MSe.ToArray());
+                        Output = Convert.ToBase64String(MSe.ToArray());
                     }
                 }
             }
+            return Output;
         }
 
         // Desencriptar texto con cifrado AES
         public static String AESDecrypt(String Input)
         {
+            String Output = String.Empty;
             using (Aes AESAlg = Aes.Create())
             {
                 AESAlg.Key = Encoding.UTF8.GetBytes(key);
@@ -413,11 +417,12 @@ namespace EncriptarTexto
                     {
                         using (StreamReader SRd = new StreamReader(CSd))
                         {
-                            return SRd.ReadToEnd();
+                            Output = SRd.ReadToEnd();
                         }
                     }
                 }
             }
+            return Output;
         }
     }
 
@@ -726,11 +731,60 @@ namespace CtrlWinForms
         // Captar datos de un DataGridView
         void CellSele(DataGridView DGV)
         {
-            Int64 Columna0 = Convert.ToInt64(DGV.CurrentRow.Cells[0].Value);
-            String Columna1 = DGV.CurrentRow.Cells[1].Value.ToString();
-            Boolean Columna2 = Convert.ToBoolean(DGV.CurrentRow.Cells[2].Value);
-            DateTime Columna3 = Convert.ToDateTime(DGV.CurrentRow.Cells[3].Value);
-            Decimal Columna4 = Convert.ToDecimal(DGV.CurrentRow.Cells[4].Value);
+            // Modo simple, abierto a errores de todo tipo
+            try
+            {
+                Int64 Columna0 = Convert.ToInt64(DGV.CurrentRow.Cells[0].Value);
+                String Columna1 = DGV.CurrentRow.Cells[1].Value.ToString();
+                Boolean Columna2 = Convert.ToBoolean(DGV.CurrentRow.Cells[2].Value);
+                DateTime Columna3 = Convert.ToDateTime(DGV.CurrentRow.Cells[3].Value);
+                Decimal Columna4 = Convert.ToDecimal(DGV.CurrentRow.Cells[4].Value);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            // Modo a prueba de errores
+            if (DGV.Rows.Count > 0)
+            {
+                try
+                {
+                    // Valores Int16, Int32 e Int64
+                    var Col0 = DGV.CurrentRow?.Cells[0].Value;
+                    if (Col0 != null && Col0 != DBNull.Value && Int64.TryParse(Col0.ToString(), out Int64 Int))
+                    {
+                        Int64 Columna0 = Int;
+                    }
+                    // Valores String
+                    var Col1 = DGV.CurrentRow?.Cells[1].Value;
+                    if (Col1 != null && Col1 != DBNull.Value)
+                    {
+                        String Columna1 = Col1.ToString();
+                    }
+                    // Valores Boolean
+                    var Col2 = DGV.CurrentRow?.Cells[2].Value;
+                    if (Col2 != null && Col2 != DBNull.Value && Boolean.TryParse(Col2.ToString(), out Boolean Bool))
+                    {
+                        Boolean Columna2 = Bool;
+                    }
+                    // Valores DateTime
+                    var Col3 = DGV.CurrentRow?.Cells[3].Value;
+                    if (Col3 != null && Col3 != DBNull.Value && DateTime.TryParse(Col3.ToString(), out DateTime Date))
+                    {
+                        DateTime Columna3 = Date;
+                    }
+                    // Valores Decimales
+                    var Col4 = DGV.CurrentRow?.Cells[0].Value;
+                    if (Col4 != null && Col4 != DBNull.Value && Decimal.TryParse(Col4.ToString(), out Decimal Deci))
+                    {
+                        Decimal Columna4 = Deci;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
         }
 		// 
 		void CellSize(DataGridView DGV)
@@ -769,23 +823,25 @@ namespace CtrlWinForms
         }
 
         // Asegurar que un TextBox (Evento: KeyPress) acepte números enteros, un solo punto decimal, y hasta 2 dígitos después del punto
-        public static void TextDeci(object sender, KeyPressEventArgs e)
+        public static void OnlyDeci(object sender, KeyPressEventArgs e)
         {
+            // Definir punto '.' o coma ',' que separa valores enteros de valores decimales
+            Char Punto = '.';
             // Permitir solo números, un punto decimal y teclas de control
-            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && (e.KeyChar != '.'))
+            if (!Char.IsControl(e.KeyChar) && !Char.IsDigit(e.KeyChar) && (e.KeyChar != Punto))
             {
                 e.Handled = true;
             }
             // Permitir solo un punto decimal
-            if ((e.KeyChar == '.') && ((sender as TextBox).Text.IndexOf('.') > -1))
+            if ((e.KeyChar == Punto) && ((sender as TextBox).Text.IndexOf(Punto) > -1))
             {
                 e.Handled = true;
             }
             // Permitir solo 2 dígitos después del punto decimal
-            if ((sender as TextBox).Text.Contains("."))
+            if ((sender as TextBox).Text.Contains(Punto))
             {
-                String[] Parts = (sender as TextBox).Text.Split('.');
-                if (Parts.Length > 1 && Parts[1].Length >= 2 && !char.IsControl(e.KeyChar))
+                String[] Parts = (sender as TextBox).Text.Split(Punto);
+                if (Parts.Length > 1 && Parts[1].Length >= 2 && !Char.IsControl(e.KeyChar))
                 {
                     e.Handled = true;
                 }
@@ -847,5 +903,53 @@ namespace CtrlWinForms
             return RtfCabecera + RtfContenido + RtfFinal;
         }
     }
+
+    #region Microsoft Report: Reportes RDLC
+    public static class Reportes
+    {
+        // Establecer origen de datos y reporte para un control ReportViewer
+        static void Report(ReportViewer RV)
+        {
+            /*
+                Cada DataSet necesita un ReportDataSource y BindingSource propio 
+                List<Datos>: representa el procedimiento List<> que alimentará el BindingSource
+            */
+            // 0: Nombre del DataSet del reporte dentro del archivo [Reporte].rdlc
+            // 1: ubicación del archivo de reporte .rdlc
+            String[] Texto = { "[DataSet]", "[Reporte].rdlc" };
+            // Control BindingSource
+            BindingSource BS = new BindingSource() { DataSource = List<Datos> };
+            // Asignar origen de datos al reporte usando Tabla y BindingSource
+            ReportDataSource RDS = new ReportDataSource() { Name = Texto[0], Value = BS };
+            ReportDataSource RD2 = new ReportDataSource() { Name = Texto[0], Value = BS };
+            // Establecer ReportDataSource a ReportViewer
+            RV.LocalReport.DataSources.Add(RDS);
+            RV.LocalReport.DataSources.Add(RD2);
+            // Establecer ubicación del archivo de reporte .rdlc
+            RV.LocalReport.ReportEmbeddedResource = Texto[1];
+            // Permitir imagenes externas en el reporte 
+            RV.LocalReport.EnableExternalImages = true;
+            // Asignar valores a parámetros creados por usuario en el reporte
+            ReportParameter RP1 = new ReportParameter("[Nombre del Parámetro 1]", "[Valor del Parámetro 1]");
+            ReportParameter RP2 = new ReportParameter("[Nombre del Parámetro 2]", "[Valor del Parámetro 2]");
+            // Asignar valores de parámetros al reporte
+            RV.LocalReport.SetParameters(new ReportParameter[] { RP1, RP2 });
+            // Cargar reporte
+            RV.RefreshReport();
+        }
+        // Borrar reporte
+        static void ClearRVw(ReportViewer RV)
+        {
+            // Reinicia el ReportViewer a estado inicial (como recién creado) -> Descartable
+            RV.Reset();
+            // Elimina las fuentes de datos del reporte cargado -> Requerido
+            RV.LocalReport.DataSources.Clear();
+            // Borrar la ubicación del archivo de reporte .rdlc -> Descartable
+            RV.LocalReport.ReportEmbeddedResource = String.Empty;
+            // Cargar reporte en blanco -> Requerido
+            RV.RefreshReport();
+        }
+    }
+    #endregion
 }
 #endregion

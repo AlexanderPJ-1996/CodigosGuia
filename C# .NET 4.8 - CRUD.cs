@@ -44,9 +44,6 @@ namespace CodigosGuia
 
         // Se puede utilizar este método para solo declarar la cadena/connectionStrings, pero en tal caso, deberá de declararse: using (var Conexion = new SqlConnection(CoString)) {};
         private readonly static string CoString = @"[ConnectionString]";
-
-        // Variable para almacenar si los procedimientos: UPDATE y DELETE, se realizaron con exito o no.
-        public static Boolean Done;
         // Variables para almacenar Exception: ex.Message 
         public static String ExMess, XTitle;
         #endregion
@@ -245,12 +242,10 @@ namespace CodigosGuia
                         CMD.Parameters.AddWithValue("@Columna4", Columna4);
                         CMD.Parameters.AddWithValue("@Columna5", Columna5);
                         CMD.ExecuteNonQuery();
-                        Done = true;
                     }
                 }
                 catch (Exception ex)
                 {
-                    Done = false;
                     MessageBox.Show(ex.Message);
                 }
                 Conexion.Close();
@@ -283,12 +278,10 @@ namespace CodigosGuia
                         CMD.Parameters.AddWithValue("@Columna5", Columna5);
                         CMD.Parameters.AddWithValue("@ColumnaX", ColumnaX);
                         CMD.ExecuteNonQuery();
-                        Done = true;
                     }
                 }
                 catch (Exception ex)
                 {
-                    Done = false;
                     MessageBox.Show(ex.Message);
                 }
                 Conexion.Close();
@@ -310,12 +303,10 @@ namespace CodigosGuia
                     {
                         CMD.Parameters.AddWithValue("@ID", ID);
                         CMD.ExecuteNonQuery();
-                        Done = true;
                     }
                 }
                 catch (Exception ex)
                 {
-                    Done = false;
                     MessageBox.Show(ex.Message);
                 }
                 Conexion.Close();
@@ -374,7 +365,7 @@ namespace CodigosGuia
                     String SQL = 
                         File.ReadAllText(Ruta);
                     
-                    using (MySqlCommand CMD = new MySqlCommand(SQL, Conexion))
+                    using (SqlCommand CMD = new SqlCommand(SQL, Conexion))
                     {
                         CMD.ExecuteNonQuery();
                     }
