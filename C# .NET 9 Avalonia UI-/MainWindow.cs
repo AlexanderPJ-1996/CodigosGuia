@@ -13,9 +13,11 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
     }
+
     #region Control: Timer
     DispatcherTimer? Timer; // Control Timer
     Int32 Counter = 0; // Contador para Timer
+
     // Definir propiedades y acciones a control Timer
     void Tempor()
     {
@@ -26,6 +28,7 @@ public partial class MainWindow : Window
         // Iniciar Timer
         Timer.Start();
     }
+
     // Evento: Timer_Tick
     void Timer_Tick(Object sender, EventArgs e)
     {
@@ -41,17 +44,32 @@ public partial class MainWindow : Window
         // Evento: Click
         // Evento: 
     }
+
     // Eventos PointerPressed
     void EventoPointerPressed(Object sender, PointerPressedEventArgs e)
     {
     }
-    // Abrir ventanas
-    async void OpenWins()
+
+    // Abrir Window desde Window
+    async void WinByWin(Object sender, RoutedEventArgs e)
     {
         Window Win = new();
         await Win.ShowDialog(this); // ShowDialog()
         Win.Show(this); // Show()
     }
+
+    // Abrir Window desde Window
+    async Task WinByUserControl()
+    {
+        Window Win = new();
+        MainWindow? MW = this.FindAncestorOfType<Window>();
+        if (MW != null)
+        {
+            await Win.ShowDialog(MW); // ShowDialog()
+            // Código a ejecutar despues de cerrar Window
+        }
+    }
+    
     // Expandir/Contraer barra lateral (<SplitView> <SplitView.Pane></SplitView.Pane> </SplitView>)
     void ExpandirContraerPane(Object sender, RoutedEventArgs e)
     {

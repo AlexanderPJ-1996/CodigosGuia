@@ -29,9 +29,9 @@ CREATE VIEW 'Vista' AS SELECT * FROM 'Tabla'; -- MySQL/MariaDB | SQLite
 CREATE VIEW [dbo].['Vista'] AS SELECT * FROM 'Tabla'; -- SQL Server
 
 -- Definir condición para crear tabla/vista si no existe
-CREATE TABLE IF NOT EXISTS 'Tabla' -- MySQL/MariaDB | SQLite
+CREATE TABLE IF NOT EXISTS 'Tabla' AS -- MySQL/MariaDB | SQLite
 -- 
-CREATE VIEW IF NOT EXISTS 'Vista' -- MySQL/MariaDB | SQLite
+CREATE VIEW IF NOT EXISTS 'Vista' AS -- MySQL/MariaDB | SQLite
 -- 
 
 /*

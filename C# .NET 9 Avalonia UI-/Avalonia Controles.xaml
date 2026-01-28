@@ -1,0 +1,329 @@
+<!-- Guía de controles de C# (XAML): Avalonia UI -->
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+		xmlns:vm="using:[Poyecto].ViewModels" 
+		x:DataType="vm:ClaseViewModel" 
+        x:Class="Poyecto.Ventana/UserControl"
+		SystemDecorations="Bordes de ventana (None, BorderOnly, Full)"
+        WindowStartupLocation="Ubicación de ventana al abrir (Manual, CenterScreen, CenterOwner)"
+		CanMinimize="Minimizar (True, False)"
+        CanMaximize="Maximizar (True, False)"
+        CanResize="Redimensionar (True, False)"
+		ShowInTaskbar="Mostrar en barra de tareas (True, False)"
+		Title="Título ventana">
+		
+		<!-- xmlns:vm="using:Poyecto.ClaseViewModel"  y x:DataType="vm:ClaseViewModel" se usan para definir DataContext para Window/UserControl -->
+		
+		<!-- Definir DataContext -->
+		<UserControl/Window.DataContext>
+			<vm:ClaseViewModel />
+		</UserControl/Window.DataContext>
+		
+        <!-- Propiedades generales -->
+		<Control
+			Name="Nombre"
+			Width="Ancho (#)"
+			Height="Alto (#)"
+			Background="Color de fondo"
+			BorderBrush="Color de bordes"
+			SelectionBrush="Color de selección"
+			BorderThickness="Grosor de borde (#)"
+			Padding="Espacio interno entre el borde y el contenido (#Left, #Top, #Right, #Bottom)"
+			Margin="Espacio externo entre el control y otros elementos (#Left, #Top, #Right, #Bottom)"
+			Opacity="Transparencia (0.0 a 1.0)"
+			Visibility="Visibilidad (Visible, Collapsed, Hidden)"
+			ZIndex="Orden de apilamiento (para superposición)"
+			
+			IsVisible="Habilita o deshabilita visibilidad (True, False)"
+			IsEnabled="Habilita o deshabilita el control (True, False)"
+			IsReadOnly="Habilita o deshabilita solo lectura"
+			IsFocused="Indica si el control tiene el foco"
+			IsHitTestVisible="Si puede recibir eventos de entrada"
+			TabIndex="Orden de tabulación (#)"
+			Focusable="Si puede recibir foco"
+			
+			FontFamily="Familia tipográfica"
+			FontSize="Tamaño Fuente (#)"
+			FontWeight="Peso de la fuente (Normal, Bold, etc.)"
+			FontStyle="Estilo de la fuente (Normal, Italic)"
+			Foreground="Color de texto"
+			
+			HorizontalAlignment="Alineación horizontal (Left, Center, Right, Stretch)"
+			VerticalAlignment="Alineación vertical (Top, Center, Bottom, Stretch)"
+
+			DockPanel.Dock="[Alineación Top al estar dentro de DockPanel (Top, Center, Bottom, Stretch)]"
+
+			Canvas.Top="Espacio vertical con borde superior de contenedor Canvas (#)"
+			Canvas.Left="Espacio horizontal izquierdo con borde de contenedor Canvas (#)"
+			Canvas.Bottom="Espacio vertical con borde inferior de contenedor Canvas (#)"
+			Canvas.Right="Espacio horizontal derecho con borde de contenedor Canvas (#)"
+
+			ToolTip.Tip="Cuadro/borbuja de mensaje sobre controles"
+		></Control>
+		
+		<!-- Layout (Contenedores) -->
+		<DockPanel></DockPanel>
+		
+		<RelativePanel></RelativePanel>
+		
+		<StackPanel></StackPanel>
+		
+		<WrapPanel></WrapPanel>
+		
+		<Canvas></Canvas>
+		
+		<Grid>
+			<Grid.ColumnDefinitions> <!-- Crear columnas Grid -->
+				<ColumnDefinition Width="Auto"/> <!-- Crear columna 0 | Ancho (Width) definido por control interno -->
+				<ColumnDefinition Width="*"/> <!-- Crear columna 1 | Ancho (Width) dinámico -->
+				<ColumnDefinition Width="(#)"/> <!-- Crear columna 2 | Ancho (Width) fijo -->
+			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions> <!-- Crear filas Grid -->
+				<RowDefinition Height="Auto"/> <!-- Crear fila 0 | Alto (Height) definido por control interno -->
+				<RowDefinition Height="*"/> <!-- Crear fila 1 | Alto (Height) dinámico -->
+				<RowDefinition Height="(#)"/> <!-- Crear fila 2 | Alto (Height) fijo -->
+			</Grid.RowDefinitions>
+			<Control
+				Grid.Column="Columna respectiva (#)"
+				Grid.Row="Fila respectiva (#)"
+			/> <!-- Para Width="Auto": tanto Width y Height definido, para Width="*": solo Height definido -->
+		</Grid>
+		
+		<GridSplitter></GridSplitter>
+		
+		<UniformGrid></UniformGrid>
+		
+		<LayoutTransformControl></LayoutTransformControl>
+		
+		<!-- Crear barra lateral expandible y contraible 
+			-> DisplayMode="CompactInline/CompactOverlay" permite definir tamaño configurable 
+			para CompactPaneLength=(#) cuando IsPaneOpen="False"
+		-->
+		<SplitView Name="Nombre"
+			IsPaneOpen="Barra lateral expandida o contraida (True, False)" 
+			OpenPaneLength="Tamaño de barra lateral (#)" 
+			DisplayMode="Modo de visualización (Overlay, Inline, CompactOverlay, CompactInline)" 
+			CompactPaneLength="Tamaño configurable (#)"
+			PaneBackground="Color">
+			<SplitView.Pane>
+				<StackPanel Name="SPlSideB" Spacing="#" Margin="#">
+					<!-- Listado de itmes -->
+					<ListBox>
+					</ListBox>
+				</StackPanel>
+			</SplitView.Pane>
+			<SplitView.Content>
+				<StackPanel Name="SPlConte" Spacing="#" Margin="#">
+				</StackPanel>
+			</SplitView.Content>
+		</SplitView>
+		
+		<!-- Entrada y Selección -->
+		<Button
+			HorizontalContentAlignment="Alineación horizontal de Content (Left, Center, Right, Stretch)"
+			VerticalContentAlignment="Alineación vertical de Content (Top, Center, Bottom, Stretch)"
+			Click="Evento: Click">
+		</Button>
+		
+		<CheckBox
+			IsChecked="(True, False)"
+			Checked="Evento: Checked">
+		</CheckBox>
+		
+		<ComboBox 
+			ItemsSource="{Binding String[]}" 
+			SelectionChanged="Evento: SelectionChanged">
+		</ComboBox>
+		
+		<RadioButton 
+			Content="Texto del RadioButton" 
+			GroupName="Nombre de grupo para asegurar que los botones se comporten como un conjunto" >
+			IsCheckedChanged="Evento: CheckedChanged" 
+		</RadioButton>
+		
+		<Slider></Slider>
+		
+		<NumericUpDown></NumericUpDown>
+		
+		<AutoCompleteBox></AutoCompleteBox>
+		
+		<MaskedTextBox></MaskedTextBox>
+		
+		<TextBox
+			TextWrapping="Ajuste de línea (Wrap, NoWrap, WrapWithOverflow)" 
+			AcceptsReturn="Multilinea (True, False)" 
+			Watermark="Texto tenue como marca de agua" 
+			PasswordChar="Ocultar texto tipo: contraseñas" 
+			TextChanged="Evento: TextChanged"
+			KeyDown="Evento: KeyDown (Alternativa a WinForms: KeyPress">
+		</TextBox>
+		
+		<DatePicker 
+			DayFormat="Formato días" 
+			MonthFormat="Formato meses" 
+			YearFormat="Formato años">
+		</DatePicker>
+		
+		<TimePicker></TimePicker>
+		
+		<ColorPicker></ColorPicker>
+		
+		<!-- Texto y Contenido -->
+		<TextBlock
+			TextWrapping="Ajuste de línea (Wrap, NoWrap, WrapWithOverflow)" 
+			TextAlignment="Alineación horizontal (Left, Center, Right)">
+		</TextBlock>
+		
+		<SelectableTextBlock></SelectableTextBlock>
+		
+		<Label></Label>
+		
+		<ContentControl></ContentControl>
+		
+		<TransitioningContentControl></TransitioningContentControl>
+		
+		<Expander></Expander>
+		
+		<Viewbox></Viewbox>
+		
+		<!-- Imagen y Gráficos -->
+		<Image></Image>
+		
+		<DrawingImage></DrawingImage>
+		
+		<PathIcon></PathIcon>
+		
+		<!-- Lista y Datos -->
+		<ListBox>
+			<ListBoxItem> <!-- Crear ListBoxItem clickeable -->
+				<Border 
+					Background="Transparent" 
+					PointerPressed="Evento: PointerPressed">
+					<TextBlock/>
+				</Border>
+			</ListBoxItem>
+		</ListBox>
+		
+		<ItemsControl></ItemsControl>
+		
+		<ItemsRepeater></ItemsRepeater>
+		
+		<TreeView></TreeView>
+		
+		<TreeDataGrid></TreeDataGrid>
+		
+		<!-- 
+			Para usar correctamente DataGrid en App.axaml inlcuir:
+			<StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
+		-->
+		<DataGrid Name="DGrDatos" 
+			ItemsSource="ObservableCollection<> que es origen de datos {Binding [Datos]}" 
+			AutoGenerateColumns="[Generar columnas de forma automática: (True, False)]" 
+			CanUserSortColumns="Reordenar columnas (True, False)" 
+			CanUserResizeColumns="Cambiar tamaño de columnas (True, False)" 
+			VerticalScrollBarVisibility="Barra vertical (Auto, Visible, Hidden, Disabled)" 
+			HorizontalScrollBarVisibility="Barra horizontal (Auto, Visible, Hidden, Disabled)" 
+			IsReadOnly="Solo lectura (True, False)" 
+			GotFocus="Evento: GotFocus (Alternativa a WinForms: CellEnter)" 
+			DoubleTapped="Evento: DoubleTapped (Alternativa a WinForms: DoubleClick)"
+			>
+			<DataGrid.Columns> <!-- Definir manualmente las columnas para DataGrid -->
+				<DataGridTextColumn
+					Header="Texto de cabecera" 
+					Width="Acho de columna (#)" 
+					IsVisible="Visibilidad de columna (True, False)" 
+					Binding="Columna origen de datos {Binding [Columna]}" 
+				/>
+			</DataGrid.Columns>
+		</DataGrid>
+		
+		<!-- Panel y Decoración -->
+		<Border></Border>
+		
+		<Decorator></Decorator>
+		
+		<Separator></Separator>
+		
+		<!-- Navegación y Organización -->
+		<TabControl></TabControl>
+		
+		<TabStrip></TabStrip>
+		
+		<SplitView></SplitView>
+		
+		<Carousel></Carousel>
+		
+		<!-- Ventana y PopUp -->
+		<Windows></Windows>
+		
+		<Popup></Popup>
+		
+		<Flyout></Flyout>
+		
+		<ToolTip></ToolTip>
+		
+		<TrayIcon></TrayIcon>
+		
+		<!-- Menú -->
+		<Menu>
+			<!-- Definir Items -->
+			<MenuItem 
+				Width="Ancho de MenuItem (#)">
+				<!-- Definir imagen y Header de MenuItem -->
+				<MenuItem.Header>
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="Auto" />
+							<ColumnDefinition Width="*" />
+						</Grid.ColumnDefinitions>
+						
+						<Image 
+							Width="(#)" 
+							Height="(#)" 
+							Margin="0, 0, 0, 0" 
+							Source="/Assets/[Imagen].png" 
+							Grid.Column="0" 
+						/>
+						
+						<TextBlock 
+							Text="Header de MenuItem" 
+							Margin="0, 0, 0, 0" 
+							Grid.Column="1" 
+						/>
+						
+					</Grid>
+				</MenuItem.Header>
+				
+				<!-- Elementos del menú -->
+				<MenuItem>
+				</MenuItem>
+			</MenuItem>
+		</Menu>
+		
+		<MenuFlyout></MenuFlyout>
+		
+		<NativeMenu></NativeMenu>
+		
+		<ContextMenu/>
+		
+		<!-- Estado y Progreso -->
+		<ProgressBar></ProgressBar>
+		
+		<RefreshContainer></RefreshContainer>
+		
+		<!-- Especiales -->
+		<ScrollViewer></ScrollViewer>
+		
+		<ScrollBar></ScrollBar>
+		
+		<UserControl></UserControl>
+		
+		<!-- Componentes útiles -->
+		<Calendar></Calendar>
+		
+		<MenuItem></MenuItem>
+		
+		<ValueSelectorControls></ValueSelectorControls>
+</Window>

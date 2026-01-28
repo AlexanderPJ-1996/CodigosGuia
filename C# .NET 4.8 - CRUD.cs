@@ -15,371 +15,381 @@ namespace CodigosGuia
     public static class CRUD
     {
         /*  ConnectionString: (https://www.connectionStrings.com/)
-            ------------------------------------------------------------------------------------------------------------------------
-            SQL Server LocalDB:
+            ----------------------------------------------------------------------------------------------------
+            
+			SQL Server LocalDB:
             Data Source=(LocalDB)\MSSQLLocalDB; AttachDbFilename=|DataDirectory|\[Database].mdf; Integrated Security=True
-            ------------------------------------------------------------------------------------------------------------------------
-            MySQL:
+            
+			----------------------------------------------------------------------------------------------------
+            
+			MySQL:
             Server=[ServerAddress]; Database=[Database]; Uid=[User]; Pwd=[Password]; -- Estandar
             Server=[ServerAddress]; Port=[#Port000]; Database=[Database]; Uid=[User]; Pwd=[Password]; -- Especificar n° puerto TCP
             Server=[ServerAddress], [ServerAddress], [ServerAddress]; Database=[Database]; Uid=[User]; Pwd=[Password; -- Servidores múltiples
-            ------------------------------------------------------------------------------------------------------------------------
-            SQLite:
+            
+			----------------------------------------------------------------------------------------------------
+            
+			SQLite:
             Data Source=(Ubicación)\[Database].db; Version=3;
-            ------------------------------------------------------------------------------------------------------------------------
+            
+			----------------------------------------------------------------------------------------------------
             Access 2003:
             Provider=Microsoft.Jet.OLEDB.4.0; Data Source=(Ubicación)\[Database].mdb
             Provider=Microsoft.Jet.OLEDB.4.0; Data Source=(Ubicación)\[Database].mdb; Jet OLEDB:Database Password=[Password]
-            ------------------------------------------------------------------------------------------------------------------------
-            Access 2007-2013:
+			
+            ----------------------------------------------------------------------------------------------------
+            
+			Access 2007-2013:
             Provider=Microsoft.ACE.OLEDB.12.0; Data Source=(Ubicación)\[Database].acCRUD
             Provider=Microsoft.ACE.OLEDB.12.0; Data Source=(Ubicación)\[Database].acCRUD; Jet OLEDB:Database Password=[Password]
-            ------------------------------------------------------------------------------------------------------------------------
+			
+            ----------------------------------------------------------------------------------------------------
         */
-
+		
         #region Variables generales
-        // Iniciar la conexión y almacenar la cadena de conexión (ConnectionString).
-        // C# no admite la opción de usar variables para almacenar ConnectionString con el metodo actual.
-        private readonly static SqlConnection Conexion = new SqlConnection(@"[ConnectionString]");
-
-        // Se puede utilizar este método para solo declarar la cadena/connectionStrings, pero en tal caso, deberá de declararse: using (var Conexion = new SqlConnection(CoString)) {};
-        private readonly static string CoString = @"[ConnectionString]";
-        // Variables para almacenar Exception: ex.Message 
-        public static String ExMess, XTitle;
+        // Se puede utilizar este método para solo declarar la cadena/connectionStrings, pero en tal caso, deberá de declararse: using (var Conn = new SqlConnection(Cadena)){};
+        private readonly static string Cadena = @"[ConnectionString]";
         #endregion
-
+		
         #region Conectar con base de datos
         // Metodo que retorna una variable boolean para iniciar y probar conexión con base de datos.
         public static Boolean TryCon()
         {
-            Boolean Output = new Boolean();
-            while (Output == false)
-            {
-                using (SqlConnection Conexion = new SqlConnection(CoString))
-                {
-                    try
-                    {
-                        Conexion.Open();
-                        Output = true;
-                        Conexion.Close();
-                    }
-                    catch (Exception ex)
-                    {
-                        Output = false;
-                        if (MessageBox.Show(ex.Message, Application.ProductName, MessageBoxButtons.RetryCancel) == DialogResult.Cancel)
-                        {
-                            Environment.Exit(0);
-                        }
-                    }
-                }
-            }
-            return Output;
+            Boolean Salida = new Boolean();
+			try
+			{
+				using (SqlConnection Conn = new SqlConnection(Cadena))
+				{
+					Conn.Open();
+					Salida = true;
+					Conn.Close();
+				}
+			}
+			catch (Exception ex)
+			{
+				Salida = false;
+				MessageBox.Show(ex.Message);
+			}
+            return Salida;
         }
         #endregion
-
+		
         #region Procedimientos SELECT
-        // Metodo que retorna una variable boolean para verificar la existencia de un archivo en base a condicionales WHERE.
-        public static Boolean DataEx(String Tabla, String Columna, Object Verificar)
+        // Retornar variable boolean para verificar existencia de un registro en base de datos
+        public static Boolean DataEx(String Tabla, String Columna, String Verificar)
         {
-            Boolean Output = new Boolean();
-            using (SqlConnection Conexion = new SqlConnection(CoString))
-            {
-                Conexion.Open();
-                try
-                {
-                    String SQL = 
-                        "SELECT * FROM " + Tabla + " WHERE (" + Columna + " = @Verificar)";
-                    
-                    using (SqlCommand CMD = new SqlCommand(SQL, Conexion))
-                    {
-                        CMD.Parameters.AddWithValue("@Verificar", Verificar);
-                        using (SqlDataReader DR = CMD.ExecuteReader())
-                        {
-                            if (DR.HasRows)
-                            {
-                                Output = true;
-                            }
-                            else
-                            {
-                                Output = false;
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Output = false;
-                    MessageBox.Show(ex.Message);
-                }
-                Conexion.Close();
-            }
-            return Output;
+            Boolean Salida = new Boolean();
+			try
+			{
+				String SQL = 
+					"SELECT * FROM " + Tabla + " WHERE (" + Columna + " = @Verificar)";
+				
+				using (SqlConnection Conn = new SqlConnection(Cadena))
+				{
+					Conn.Open();
+					using (SqlCommand CMD = new SqlCommand(SQL, Conn))
+					{
+						CMD.Parameters.AddWithValue("@Verificar", Verificar);
+						
+						using (SqlDataReader DR = CMD.ExecuteReader())
+						{
+							if (DR.HasRows)
+							{
+								Salida = true;
+							}
+							else
+							{
+								Salida = false;
+							}
+						}
+					}
+					Conn.Close();
+				}
+			}
+			catch (Exception ex)
+			{
+				Salida = new Boolean();
+				MessageBox.Show(ex.Message);
+			}
+            return Salida;
         }
-
-        // Procedimiento para retornar un único valor como variable en base a condicionales WHERE.
-        public static String Texto(String SQL)
+		
+        // Retornar un único valor como variable
+        public static String Texto(String Tabla, String Columna, String Verificar)
         {
-            String Output = String.Empty;
-            using (SqlConnection Conexion = new SqlConnection(CoString))
-            {
-                Conexion.Open();
-                try
-                {
-                    using (SqlCommand CMD = new SqlCommand(SQL, Conexion))
-                    {
-                        var Result = CMD.ExecuteScalar();
-                        if (Result != null)
-                        {
-                            Output = Result.ToString();
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Output = String.Empty;
-                    MessageBox.Show(ex.Message);
-                }
-                Conexion.Close();
-            }
-            return Output;
+            String Salida = String.Empty;
+			try
+			{
+				String SQL = 
+					"SELECT * FROM " + Tabla + " WHERE (" + Columna + " = @Verificar)";
+				
+				using (SqlConnection Conn = new SqlConnection(Cadena))
+				{
+					Conn.Open();
+					using (SqlCommand CMD = new SqlCommand(SQL, Conn))
+					{
+						CMD.Parameters.AddWithValue("@Verificar", Verificar);
+						var Result = CMD.ExecuteScalar();
+						
+						if (Result != null)
+						{
+							Salida = Result.ToString();
+						}
+					}
+					Conn.Close();
+				}
+			}
+			catch (Exception ex)
+			{
+				Salida = String.Empty;
+				MessageBox.Show(ex.Message);
+			}
+			return Salida;
         }
         #endregion
-
+		
         #region Procedimientos SELECT: List<>
-        // Procedimiento para retornar listado de registros almacenados en una tabla para usar como fuente para DataSource o BindingSource.
+        // Retornar listado de registros almacenados en una tabla para usar como fuente para DataSource o BindingSource.
         public static List<ClaseTabla> CargarDatos()
         {
-            List<ClaseTabla> Output = new List<ClaseTabla>();
-            using (SqlConnection Conexion = new SqlConnection(CoString))
-            {
-                Conexion.Open();
-                try
-                {
-                    String SQL = 
-                        "SELECT * FROM [Tabla]";
-                    
-                    using (SqlCommand CMD = new SqlCommand(SQL, Conexion))
-                    {
-                        CMD.CommandType = CommandType.Text;
-                        using (SqlDataReader DR = CMD.ExecuteReader())
-                        {
-                            while (DR.Read())
-                            {
-                                Output.Add(new ClaseTabla()
-                                {
-                                    // Acá el nombre de la columna dentro de DR[""] y la variable deberá ser exactamente iguales.
-                                    Columna1 = Convert.ToInt64(DR["Columna1"]),
-                                    Columna2 = DR["Columna2"].ToString(),
-                                    Columna3 = Convert.ToDateTime(DR["Columna3"]),
-                                    Columna4 = Convert.ToBoolean(DR["Columna4"]),
-                                    Columna5 = Convert.ToDecimal(DR["Columna5"])
-                                });
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Output = new List<ClaseTabla>();
-                    MessageBox.Show(ex.Message);
-                }
-                Conexion.Close();
-            }
-            return Output;
+            List<ClaseTabla> Salida = new List<ClaseTabla>();
+			try
+			{
+				String SQL = 
+					"SELECT * FROM [Tabla]";
+				
+				using (SqlConnection Conn = new SqlConnection(Cadena))
+				{
+					Conn.Open();
+					using (SqlCommand CMD = new SqlCommand(SQL, Conn))
+					{
+						CMD.CommandType = CommandType.Text;
+						
+						using (SqlDataReader DR = CMD.ExecuteReader())
+						{
+							while (DR.Read())
+							{
+								Salida.Add(new ClaseTabla()
+								{
+									// Nombre de la columna dentro de DR[""] y la variable deberá ser exactamente iguales
+									Columna1 = Convert.ToInt64(DR["Columna1"]),
+									Columna2 = DR["Columna2"].ToString(),
+									Columna3 = Convert.ToDateTime(DR["Columna3"]),
+									Columna4 = Convert.ToBoolean(DR["Columna4"]),
+									Columna5 = Convert.ToDecimal(DR["Columna5"])
+								});
+							}
+						}
+					}
+					Conn.Close();
+				}
+			}
+			catch (Exception ex)
+			{
+				Salida = new List<ClaseTabla>();
+				MessageBox.Show(ex.Message);
+			}
+            return Salida;
         }
-
-        /*
-            Procedimiento para retornar un List>String> con de datos de una columna en base a condicionales WHERE
-            La variable: String SQL deberá ser del estilo: SELECT [Columna] FROM [Tabla] WHERE ([Columna]=@Columna) ORDER BY [Columna] ASC/DESC.
-        */
-        public static List<String> CargarLista(String SQL, String Columna)
+		
+        // Retornar un List<String> con de datos de una columna en base de datos
+        public static List<String> CargarLista(String Tabla, String Columna, String Verificar)
         {
-            List<String> Output = new List<String>();
-            using (SqlConnection Conexion = new SqlConnection(CoString))
-            {
-                Conexion.Open();
-                try
-                {
-                    using (SqlCommand CMD = new SqlCommand(SQL, Conexion))
-                    {
-                        CMD.CommandType = CommandType.Text;
-                        using (SqlDataReader DR = CMD.ExecuteReader())
-                        {
-                            while (DR.Read())
-                            {
-                                Output.Add(DR[Columna].ToString());
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Output = new List<String>();
-                }
-                Conexion.Close();
-            }
-            return Output;
+            List<String> Salida = new List<String>();
+			try
+			{
+				String SQL = 
+					"SELECT * FROM " + Tabla + " WHERE (" + Columna + " = @Verificar)";
+				
+				using (SqlConnection Conn = new SqlConnection(Cadena))
+				{
+					Conn.Open();
+					using (SqlCommand CMD = new SqlCommand(SQL, Conn))
+					{
+						CMD.Parameters.AddWithValue("@Verificar", Verificar);
+						CMD.CommandType = CommandType.Text;
+						
+						using (SqlDataReader DR = CMD.ExecuteReader())
+						{
+							while (DR.Read())
+							{
+								Salida.Add(DR[Columna].ToString());
+							}
+						}
+					}
+					Conn.Close();
+				}
+			}
+			catch (Exception ex)
+			{
+				Salida = new List<String>();
+			}
+			return Salida;
         }
         #endregion
-
+		
         #region Procedimientos que no retornan datos
-        // Procedimiento para registrar datos en una tabla.
+        // Registrar datos en una tabla
         public static void InseRegs(Int64 Columna1, String Columna2, String Columna3, String Columna4, String Columna5)
         {
-            using (SqlConnection Conexion = new SqlConnection(CoString))
-            {
-                Conexion.Open();
-                try
-                {
-                    String SQL = 
-                        "INSERT INTO [Tabla] (Columna1, Columna2, Columna3, Columna4, Columna5) VALUES (@Columna1, @Columna2, @Columna3, @Columna4, @Columna5)";
-                    
-                    using (SqlCommand CMD = new SqlCommand(SQL, Conexion))
-                    {
-                        CMD.Parameters.AddWithValue("@Columna1", Columna1);
-                        CMD.Parameters.AddWithValue("@Columna2", Columna2);
-                        CMD.Parameters.AddWithValue("@Columna3", Columna3);
-                        CMD.Parameters.AddWithValue("@Columna4", Columna4);
-                        CMD.Parameters.AddWithValue("@Columna5", Columna5);
-                        CMD.ExecuteNonQuery();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-                Conexion.Close();
-            }
+            try
+			{
+				String SQL = 
+					"INSERT INTO [Tabla] (Columna1, Columna2, Columna3, Columna4, Columna5) VALUES (@Columna1, @Columna2, @Columna3, @Columna4, @Columna5)";
+				
+				using (SqlConnection Conn = new SqlConnection(Cadena))
+				{
+					Conn.Open();
+					using (SqlCommand CMD = new SqlCommand(SQL, Conn))
+					{
+						CMD.Parameters.AddWithValue("@Columna1", Columna1);
+						CMD.Parameters.AddWithValue("@Columna2", Columna2);
+						CMD.Parameters.AddWithValue("@Columna3", Columna3);
+						CMD.Parameters.AddWithValue("@Columna4", Columna4);
+						CMD.Parameters.AddWithValue("@Columna5", Columna5);
+					}
+					Conn.Close();
+				}
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message);
+			}
         }
-
-        // Procedimiento para editar datos existentes de una tabla en base a condicionales WHERE.
+		
+        // Editar datos existentes de una tabla
         public static void UpdaRegs(Int64 Columna1, String Columna2, String Columna3, String Columna4, String Columna5, Objetc ColumnaX)
         {
-            using (SqlConnection Conexion = new SqlConnection(CoString))
-            {
-                Conexion.Open();
-                try
-                {
-                    String SQL = 
-                        "UPDATE [Tabla] SET " + 
-                        "Columna1 = @Columna1, " + 
-                        "Columna2 = @Columna2, " + 
-                        "Columna3 = @Columna3, " + 
-                        "Columna4 = @Columna4, " + 
-                        "Columna5 = @Columna5 " + 
-                        "WHERE (ColumnaX = @ColumnaX)";
-                    
-                    using (SqlCommand CMD = new SqlCommand(SQL, Conexion))
-                    {
-                        CMD.Parameters.AddWithValue("@Columna1", Columna1);
-                        CMD.Parameters.AddWithValue("@Columna2", Columna2);
-                        CMD.Parameters.AddWithValue("@Columna3", Columna3);
-                        CMD.Parameters.AddWithValue("@Columna4", Columna4);
-                        CMD.Parameters.AddWithValue("@Columna5", Columna5);
-                        CMD.Parameters.AddWithValue("@ColumnaX", ColumnaX);
-                        CMD.ExecuteNonQuery();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-                Conexion.Close();
-            }
+            try
+			{
+				String SQL = 
+					"UPDATE [Tabla] SET " + 
+					"Columna1 = @Columna1, " + 
+					"Columna2 = @Columna2, " + 
+					"Columna3 = @Columna3, " + 
+					"Columna4 = @Columna4, " + 
+					"Columna5 = @Columna5 " + 
+					"WHERE (ColumnaX = @ColumnaX)";
+				
+				using (SqlConnection Conn = new SqlConnection(Cadena))
+				{
+					Conn.Open();
+					using (SqlCommand CMD = new SqlCommand(SQL, Conn))
+					{
+						CMD.Parameters.AddWithValue("@Columna1", Columna1);
+						CMD.Parameters.AddWithValue("@Columna2", Columna2);
+						CMD.Parameters.AddWithValue("@Columna3", Columna3);
+						CMD.Parameters.AddWithValue("@Columna4", Columna4);
+						CMD.Parameters.AddWithValue("@Columna5", Columna5);
+						CMD.Parameters.AddWithValue("@ColumnaX", ColumnaX);
+						CMD.ExecuteNonQuery();
+					}
+					Conn.Close();
+				}
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message);
+			}
         }
-
-        // Procedimiento para eliminar datos existentes de una tabla en base a condicionales WHERE.
+		
+        // Eliminar datos existentes de una tabla
         public static void DeleRegs(String Tabla, Int64 ID)
         {
-            using (SqlConnection Conexion = new SqlConnection(CoString))
-            {
-                Conexion.Open();
-                try
-                {
-                    String SQL = 
-                        "DELETE FROM " + Tabla + " WHERE (ID = @ID)";
-                    
-                    using (SqlCommand CMD = new SqlCommand(SQL, Conexion))
-                    {
-                        CMD.Parameters.AddWithValue("@ID", ID);
-                        CMD.ExecuteNonQuery();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-                Conexion.Close();
-            }
+            try
+			{
+				String SQL = 
+					"DELETE FROM " + Tabla + " WHERE (ID = @ID)";
+				
+				using (SqlConnection Conn = new SqlConnection(Cadena))
+				{
+					Conn.Open();
+					using (SqlCommand CMD = new SqlCommand(SQL, Conn))
+					{
+						CMD.Parameters.AddWithValue("@ID", ID);
+						CMD.ExecuteNonQuery();
+					}
+					Conn.Close();
+				}
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message);
+			}
         }
-
+		
         // Procedimiento para registrar datos en una tablas desde un archivo .csv UTF-8 Uniconde (separado por comas).
         public static void Importar()
         {
-            String Ruta = 
-                @"[Ruta de archivo].csv";
-            
-            if (File.Exists(Ruta))
-            {
-                try
-                {
-                    using (var Read = new StreamReader(Ruta))
-                    {
-                        String Head = Read.ReadLine();
-                        using (SqlConnection Conexion = new MySqlConnection(CoString))
-                        {
-                            Conexion.Open();
-                            while (!Read.EndOfStream)
-                            {
-                                String Line = Read.ReadLine();
-                                String[] Data = Line.Split(';');
-                                Int64 Columna1 = Convert.ToInt64(Data[0]);
-                                String Columna2 = Data[1];
-                                String Columna3 = Data[2];
-                                Boolean Columna4 = Convert.ToBoolean(Data[3]);
-                                Decimal Columna5 = Convert.ToDecimal(Data[4]);
-                                InseRegs(Columna1, Columna2, Columna3, Columna4, Columna5);
-                            }
-                            Conexion.Close();
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-            }
+            try
+			{
+				String Ruta = 
+					@"[Ruta de archivo].csv";
+				
+				if (File.Exists(Ruta))
+				{
+					using (StreamReader Read = new StreamReader(Ruta))
+					{
+						String Head = Read.ReadLine();
+						
+						using (SqlConnection Conn = new MySqlConnection(Cadena))
+						{
+							Conn.Open();
+							while (!Read.EndOfStream)
+							{
+								String Line = Read.ReadLine();
+								String[] Data = Line.Split(';');
+								
+								Int64 Columna1 = Convert.ToInt64(Data[0]);
+								String Columna2 = Data[1];
+								String Columna3 = Data[2];
+								Boolean Columna4 = Convert.ToBoolean(Data[3]);
+								Decimal Columna5 = Convert.ToDecimal(Data[4]);
+								
+								InseRegs(Columna1, Columna2, Columna3, Columna4, Columna5);
+							}
+							Conn.Close();
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message);
+			}
         }
-
+		
         // Recuperar texto de los archivos .sql y ejecutar consultas sql desde archivos
         public static void ExecProc()
         {
-            using (SqlConnection Conexion = new MySqlConnection(CoString))
-            {
-                Conexion.Open();
-                try
-                {
-                    String Ruta = 
-                        @"[Ruta de archivo].sql";
-                    
-                    String SQL = 
-                        File.ReadAllText(Ruta);
-                    
-                    using (SqlCommand CMD = new SqlCommand(SQL, Conexion))
-                    {
-                        CMD.ExecuteNonQuery();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-                Conexion.Close();
-            }
+            try
+			{
+				String Ruta = 
+					@"[Ruta de archivo].sql";
+				
+				if (File.Exists(Ruta))
+				{
+					String SQL = File.ReadAllText(Ruta);
+					
+					using (SqlConnection Conn = new MySqlConnection(Cadena))
+					{
+						Conn.Open();
+						using (SqlCommand CMD = new SqlCommand(SQL, Conn))
+						{
+							CMD.ExecuteNonQuery();
+						}
+						Conn.Close();
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message);
+			}
         }
         #endregion
     }
-
+	
     #region Clases y funciones complementarias
     // Estructura base para las "ClaseTabla" para los procedimientos: CargarDatos.
     public class ClaseTabla

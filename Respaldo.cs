@@ -29,7 +29,7 @@
             }
         }
 
-        private void BtnPrev_Click(object sender, EventArgs e)
+        void BtnPrev_Click(Object sender, EventArgs e)
         {
             if (DGVDatos.RowCount == 0) return;
 
@@ -45,7 +45,7 @@
             SeleCell(NewRow);
         }
 
-        private void BtnNext_Click(object sender, EventArgs e)
+        void BtnNext_Click(Object sender, EventArgs e)
         {
             if (DGVDatos.Rows.Count == 0) return;
 

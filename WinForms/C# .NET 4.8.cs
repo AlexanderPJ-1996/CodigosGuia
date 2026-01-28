@@ -65,7 +65,10 @@ namespace CodigosGuia
             {
                 Directory.CreateDirectory(NewPath1);
             }
-
+			
+			// Marcar la carpeta como oculta
+			File.SetAttributes(NewPath1, File.GetAttributes(NewPath1) | FileAttributes.Hidden);
+			
             // Crear subcarpeta/subdirectorio
             String NewPath2 = Path.Combine(PathBase, NewPath1, @"[Subdirectorio]");
             if (!Directory.Exists(NewPath2))
@@ -189,6 +192,29 @@ namespace CodigosGuia
                 {
                     PBx.Image = null;
                     MessageBox.Show(ex.Message);
+                }
+            }
+			// Cargar imagen en PictureBox desde ruta de archivo
+			String Foto = @"";
+			if (File.Exists(Foto))
+            {
+                try
+                {
+                    using (FileStream FS = new FileStream(Foto, FileMode.Open, FileAccess.Read))
+                    {
+                        using (MemoryStream MS = new MemoryStream())
+                        {
+                            FS.CopyTo(MS);
+                            MS.Seek(0, SeekOrigin.Begin);
+                            PBx.Image?.Dispose();
+                            PBx.Image = Image.FromStream(MS);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    PBx.Image = null;
+					MessageBox.Show(ex.Message);
                 }
             }
         }
