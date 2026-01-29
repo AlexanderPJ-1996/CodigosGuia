@@ -247,6 +247,7 @@ namespace CodigosGuia
 						CMD.Parameters.AddWithValue("@Columna3", Columna3);
 						CMD.Parameters.AddWithValue("@Columna4", Columna4);
 						CMD.Parameters.AddWithValue("@Columna5", Columna5);
+						CMD.ExecuteNonQuery();
 					}
 					Conn.Close();
 				}
